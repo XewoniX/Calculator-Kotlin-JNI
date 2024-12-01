@@ -15,7 +15,16 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildFeatures {
+            compose = true
+        }
+
+        composeOptions {
+            kotlinCompilerExtensionVersion = "1.5.3" // Dopasuj do wersji Compose
+        }
     }
+
 
     buildTypes {
         release {
@@ -42,9 +51,23 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
 }
 
 dependencies {
+    implementation(platform("androidx.compose:compose-bom:2024.01.00"))
+
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.material:material")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+
+    debugImplementation("androidx.compose.ui:ui-tooling")
+
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.activity:activity-compose:1.7.2")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
