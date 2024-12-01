@@ -3,7 +3,7 @@ package com.example.calc
 class NativeCalculator {
     companion object {
         init {
-            System.loadLibrary("calculator")
+            System.loadLibrary("calc")
         }
     }
     external fun add(a: Double, b: Double): Double
