@@ -5,5 +5,7 @@ enum class Operator(val operator: String) {
     MINUS("-"),
     MULTIPLY("*"),
     DIVIDE("/"),
-    EMPTY("")
+    EMPTY(""),
+    OPENBRACKET("("),
+    CLOSEBRACKET(")")
 }

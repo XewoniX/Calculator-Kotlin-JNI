@@ -1,26 +1,34 @@
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.calc.Operator
-import com.example.calc.Operator.DIVIDE
-import com.example.calc.Operator.EMPTY
-import com.example.calc.Operator.MINUS
-import com.example.calc.Operator.MULTIPLY
-import com.example.calc.Operator.PLUS
+import java.text.DecimalFormat
 
 @Composable
 fun CalcScreen(viewModel: CalculatorViewModel = viewModel()) {
-
-    var operator by remember { mutableStateOf<Operator>(EMPTY) }
-    var input1 by remember { mutableStateOf("") }
-    var input2 by remember { mutableStateOf("") }
-    var result by remember { mutableStateOf("") }
-
+    var action by remember { mutableStateOf("") }
+    var result: String by remember { mutableStateOf("") }
+    var history by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -33,30 +41,12 @@ fun CalcScreen(viewModel: CalculatorViewModel = viewModel()) {
             modifier = Modifier.fillMaxWidth()
         ) {
             TextField(
-                value = input1,
+                value = action,
                 onValueChange = {
-                    if (operator == EMPTY) {
-                        input1 = it
-                    }
+                    action = it
                 },
-                textStyle = LocalTextStyle.current.copy(color = Color.White, fontSize = 24.sp),
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color(0xFF2C2C2C),
-                    focusedIndicatorColor = Color.White,
-                    unfocusedIndicatorColor = Color.Gray
-                ),
-                modifier = Modifier
-                    .weight(1f)
-                    .height(100.dp)
-            )
-            TextField(
-                value = input2,
-                onValueChange = {
-                    if (operator != EMPTY) {
-                        input2 = it
-                    }
-                },
-                textStyle = LocalTextStyle.current.copy(color = Color.White, fontSize = 24.sp),
+                label = { Text(text = history, color = Color.Yellow, fontSize = 24.sp) },
+                textStyle = LocalTextStyle.current.copy(color = Color.White, fontSize = 38.sp),
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color(0xFF2C2C2C),
                     focusedIndicatorColor = Color.White,
@@ -76,18 +66,19 @@ fun CalcScreen(viewModel: CalculatorViewModel = viewModel()) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 CalculatorButton("7", onClick = {
-                    if (operator == EMPTY) input1 += "7" else input2 += "7"
+                    action += 7
                 })
                 CalculatorButton("8", onClick = {
-                    if (operator == EMPTY) input1 += "8" else input2 += "8"
+                    action += 8
                 })
                 CalculatorButton("9", onClick = {
-                    if (operator == EMPTY) input1 += "9" else input2 += "9"
+                    action += 9
                 })
                 CalculatorButton("/", onClick = {
-                    if (input1.isNotEmpty()) {
-                        operator = DIVIDE
-                    }
+                    action += "/"
+                })
+                CalculatorButton("(", onClick = {
+                    action += "("
                 })
             }
 
@@ -96,18 +87,19 @@ fun CalcScreen(viewModel: CalculatorViewModel = viewModel()) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 CalculatorButton("4", onClick = {
-                    if (operator == EMPTY) input1 += "4" else input2 += "4"
+                    action += 4
                 })
                 CalculatorButton("5", onClick = {
-                    if (operator == EMPTY) input1 += "5" else input2 += "5"
+                    action += 5
                 })
                 CalculatorButton("6", onClick = {
-                    if (operator == EMPTY) input1 += "6" else input2 += "6"
+                    action += 6
                 })
-                CalculatorButton("*", onClick = {
-                    if (input1.isNotEmpty()) {
-                        operator = MULTIPLY
-                    }
+                CalculatorButton("X", onClick = {
+                    action += "*"
+                })
+                CalculatorButton(")", onClick = {
+                    action += ')'
                 })
             }
 
@@ -116,18 +108,19 @@ fun CalcScreen(viewModel: CalculatorViewModel = viewModel()) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 CalculatorButton("1", onClick = {
-                    if (operator == EMPTY) input1 += "1" else input2 += "1"
+                    action += 1
                 })
                 CalculatorButton("2", onClick = {
-                    if (operator == EMPTY) input1 += "2" else input2 += "2"
+                    action += 2
                 })
                 CalculatorButton("3", onClick = {
-                    if (operator == EMPTY) input1 += "3" else input2 += "3"
+                    action += 3
                 })
                 CalculatorButton("-", onClick = {
-                    if (input1.isNotEmpty()) {
-                        operator = MINUS
-                    }
+                    action += "-"
+                })
+                CalculatorButton(".", onClick = {
+                    action += '.'
                 })
             }
 
@@ -136,23 +129,28 @@ fun CalcScreen(viewModel: CalculatorViewModel = viewModel()) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 CalculatorButton("C", onClick = {
-                    input1 = ""
-                    input2 = ""
-                    operator = EMPTY
+                    action = ""
+                    history = ""
                 })
                 CalculatorButton("0", onClick = {
-                    if (operator == EMPTY) input1 += "0" else input2 += "0"
+                    action += 0
                 })
                 CalculatorButton("=", onClick = {
-                    result = viewModel.calculate(input1, input2, operator)
-                    input1 = result // Przypisanie wyniku do input1
-                    input2 = ""
-                    operator = EMPTY
-                })
-                CalculatorButton(PLUS.operator, onClick = {
-                    if (input1.isNotEmpty()) {
-                        operator = PLUS
+                    try {
+                        result = viewModel.calculate(action)
+                        history = action
+                        action = result
+
+                    } catch (e: Exception) {
+                        result = "Błąd"
+                        action = ""
                     }
+                })
+                CalculatorButton("+", onClick = {
+                    action += '+'
+                })
+                CalculatorButton("<-", onClick = {
+                    action = action.dropLast(1)
                 })
             }
         }
